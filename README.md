@@ -1,22 +1,23 @@
 # 🛠️ SWIGS Infrastructure
 
-Scripts de déploiement, configurations et documentation pour l'infrastructure SWIGS.
+Scripts de déploiement, configurations et **documentation complète** pour l'infrastructure SWIGS.
 
 ## 📋 Contenu
 
-### Scripts
+### 📚 Documentation
+
+- **[Architecture Complète](docs/ARCHITECTURE.md)** - Documentation détaillée de l'architecture SWIGS
+- **[Quick Start Nouveau Site](docs/QUICK_START_NEW_SITE.md)** - Guide rapide pour créer un nouveau site
+
+### 🔧 Scripts
 
 - **`install-server.sh`** - Installation automatique du monitoring sur un nouveau serveur
 - **`setup-deploy-permissions.sh`** - Configuration des permissions de déploiement
 
-### Configurations
+### ⚙️ Configurations
 
 - **`nginx-configs/`** - Configurations Nginx pour tous les services
 - **`pm2-ecosystem/`** - Fichiers ecosystem PM2
-
-### Documentation
-
-- **`docs/`** - Guides de déploiement et documentation
 
 ## 🚀 Utilisation
 
