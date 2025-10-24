@@ -20,7 +20,7 @@ Guide rapide pour Claude AI ou développeurs.
 
 ### Phase 2 : Configuration CMS (Admin)
 
-- [ ] Se connecter à https://admin.speed-l.swigs.online
+- [ ] Se connecter à https://admin.swigs.online
 - [ ] Créer le site dans **Sites** → **Nouveau Site**
   - Nom, slug, domaine, description, logo
 - [ ] Configurer le SEO dans **SEO** → **Nouveau SEO**

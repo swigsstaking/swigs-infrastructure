@@ -196,7 +196,7 @@ export const useSiteInfo = () => {
 
 ### Étape 1 : Créer le Site dans l'Admin
 
-1. Se connecter à l'admin : https://admin.speed-l.swigs.online
+1. Se connecter à l'admin : https://admin.swigs.online
 2. Aller dans **Sites** → **Nouveau Site**
 3. Remplir :
    - **Nom** : Nom du site
@@ -502,9 +502,10 @@ tar -czf ~/backups/sites/$(date +%Y%m%d).tar.gz /var/www/
 
 ### URLs Production
 
-- **Admin** : https://admin.speed-l.swigs.online
+- **Admin** : https://admin.swigs.online
 - **Control Center** : https://monitoring.swigs.online
 - **Speed-L** : https://speed-l.swigs.online
+- **Buffet de la Gare** : https://buffet-de-la-gare.swigs.online
 
 ### Documentation
 
