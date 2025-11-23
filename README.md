@@ -37,13 +37,15 @@ bash setup-deploy-permissions.sh
 
 ```
 swigsstaking/
-├── swigs-cms-admin/          # Admin multi-sites
-├── swigs-cms-backend/        # API backend CMS
+├── swigs-cms-admin/          # Admin multi-sites V1
+├── swigs-cms-admin-v2/       # Admin multi-sites V2 (production)
+├── swigs-cms-backend/        # API backend CMS + E-commerce
 ├── speedl-website/           # Site Speed-L
+├── buffet-de-la-gare-website/  # Site Buffet de la Gare
+├── selfnodes/                # Site SelfNodes (validators)
 ├── swigs-control-center/     # Dashboard monitoring
 ├── swigs-monitoring-api/     # API monitoring
 ├── swigs-monitoring-agent/   # Agent serveur principal
-├── swigs-server-collector/   # Collecteur serveurs externes
 └── swigs-infrastructure/     # Scripts & configs (ce repo)
 ```
 

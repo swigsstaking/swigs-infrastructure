@@ -117,7 +117,152 @@ Contenu dynamique des sections (menus, textes, etc.).
 - `isActive` : Boolean
 
 #### 7. **contacts**
-Messages de contact (actuellement vide).
+Messages de contact.
+
+**Champs** :
+- `_id` : ObjectId
+- `site` : ObjectId (référence vers sites)
+- `name` : Nom du contact
+- `email` : Email
+- `phone` : Téléphone (optionnel)
+- `subject` : Sujet
+- `message` : Message
+- `status` : "new" | "read" | "replied"
+- `createdAt` : Date
+
+#### 8. **products** (E-commerce)
+Produits vendus sur les sites e-commerce.
+
+**Champs** :
+- `_id` : ObjectId
+- `site` : ObjectId (référence vers sites)
+- `name` : Nom du produit
+- `slug` : URL-friendly
+- `description` : Description
+- `shortDescription` : Description courte
+- `price` : Number (prix de base)
+- `salePrice` : Number (prix promo, optionnel)
+- `sku` : String (référence produit, peut être null)
+- `stock` : Number
+- `images` : Array d'URLs
+- `categories` : Array d'ObjectId (références vers categories)
+- `variations` : Array { name, values[] }
+- `attributes` : Object (données custom)
+- `seo` : { title, description, keywords }
+- `isActive` : Boolean
+- `isFeatured` : Boolean
+- `order` : Number
+- `createdAt`, `updatedAt` : Dates
+
+#### 9. **categories** (E-commerce)
+Catégories de produits.
+
+**Champs** :
+- `_id` : ObjectId
+- `site` : ObjectId (référence vers sites)
+- `name` : Nom de la catégorie
+- `slug` : URL-friendly
+- `description` : Description
+- `parent` : ObjectId (catégorie parente, optionnel)
+- `image` : URL
+- `order` : Number
+- `isActive` : Boolean
+- `productCount` : Number (calculé)
+- `createdAt`, `updatedAt` : Dates
+
+#### 10. **orders** (E-commerce)
+Commandes clients.
+
+**Champs** :
+- `_id` : ObjectId
+- `site` : ObjectId (référence vers sites)
+- `orderNumber` : String (unique, ex: "ORD-20251123-001")
+- `customer` : { name, email, phone }
+- `items` : Array { product, name, price, quantity, total }
+- `subtotal` : Number
+- `shipping` : Number
+- `tax` : Number
+- `discount` : Number
+- `total` : Number
+- `status` : "pending" | "processing" | "shipped" | "delivered" | "cancelled"
+- `paymentMethod` : "stripe" | "paypal" | "bank_transfer"
+- `paymentStatus` : "pending" | "paid" | "failed" | "refunded"
+- `paymentId` : String (ID transaction Stripe/PayPal)
+- `shippingAddress` : { street, city, postalCode, country }
+- `billingAddress` : { street, city, postalCode, country }
+- `notes` : String
+- `promoCode` : String (optionnel)
+- `timeline` : Array { status, date, note }
+- `createdAt`, `updatedAt` : Dates
+
+#### 11. **customers** (E-commerce)
+Clients e-commerce.
+
+**Champs** :
+- `_id` : ObjectId
+- `site` : ObjectId (référence vers sites)
+- `email` : String (unique par site)
+- `firstName` : String
+- `lastName` : String
+- `phone` : String
+- `addresses` : Array { label, street, city, postalCode, country, isDefault }
+- `orders` : Array d'ObjectId (références vers orders)
+- `totalSpent` : Number
+- `orderCount` : Number
+- `lastOrderDate` : Date
+- `createdAt`, `updatedAt` : Dates
+
+#### 12. **promocodes** (E-commerce)
+Codes promotionnels.
+
+**Champs** :
+- `_id` : ObjectId
+- `site` : ObjectId (référence vers sites)
+- `code` : String (unique, ex: "NOEL2025")
+- `type` : "percentage" | "fixed"
+- `value` : Number (pourcentage ou montant)
+- `minAmount` : Number (montant minimum commande)
+- `maxUses` : Number (limite d'utilisations)
+- `usedCount` : Number
+- `validFrom` : Date
+- `validUntil` : Date
+- `isActive` : Boolean
+- `createdAt`, `updatedAt` : Dates
+
+#### 13. **nodeservers** (SelfNodes)
+Serveurs hébergeant des validators.
+
+**Champs** :
+- `_id` : ObjectId
+- `name` : String (ex: "Server CH-01")
+- `location` : String (ex: "Lausanne, Switzerland")
+- `datacenter` : String
+- `specs` : { cpu, ram, storage, network }
+- `status` : "online" | "offline" | "maintenance"
+- `nodes` : Array d'ObjectId (références vers nodes)
+- `createdAt`, `updatedAt` : Dates
+
+#### 14. **nodes** (SelfNodes)
+Validators Ethereum/Gnosis/Lukso.
+
+**Champs** :
+- `_id` : ObjectId
+- `server` : ObjectId (référence vers nodeservers)
+- `network` : "ethereum" | "gnosis" | "lukso"
+- `validatorIndex` : Number
+- `publicKey` : String
+- `status` : "active" | "pending" | "exited" | "slashed"
+- `balance` : Number (en ETH/GNO/LYX)
+- `effectiveBalance` : Number
+- `activationEpoch` : Number
+- `exitEpoch` : Number (optionnel)
+- `slashed` : Boolean
+- `uptime` : Number (pourcentage)
+- `attestations` : { total, missed }
+- `proposals` : { total, missed }
+- `rewards` : Number (total rewards)
+- `lastSeen` : Date
+- `createdAt`, `updatedAt` : Dates
 
 ---
 
@@ -145,6 +290,12 @@ Messages de contact (actuellement vide).
 - `media.siteId` → `sites._id`
 - `courses.site` → `sites._id`
 - `contents.site` → `sites._id`
+- `products.site` → `sites._id`
+- `categories.site` → `sites._id`
+- `orders.site` → `sites._id`
+- `customers.site` → `sites._id`
+- `promocodes.site` → `sites._id`
+- `nodes.server` → `nodeservers._id`
 
 ---
 
@@ -175,27 +326,39 @@ db.sites.find({ "domains.url": /https:\/\/https:/ })
 
 ---
 
-## 📝 État Actuel (24 Oct 2025)
+## 📝 État Actuel (Novembre 2025)
 
 ### Sites
 1. **Speed-L Auto-école**
-   - ID: `68f2526d1787e3f19795e0f0`
    - Slug: `speed-l`
    - Domain: `speedl.swigs.online`
-   - Domains: [] (vide)
+   - Type: `website`
 
 2. **Buffet de la Gare chez Claude**
-   - ID: `68fa38c3483f6dc7aa5e8c35`
    - Slug: `buffet`
    - Domain: `buffet-de-la-gare.swigs.online`
-   - Domains: [{ url: "https://buffet-de-la-gare.swigs.online", ... }] ✅
+   - Type: `website`
 
-### Utilisateurs
-- 1 admin : `admin@swigs.online`
+3. **SelfNodes**
+   - Slug: `selfnodes`
+   - Domain: `selfnodes.com`
+   - Type: `website`
 
-### Médias
-- 2 fichiers uploadés (logos Speed-L)
-- URLs pointent vers domaines des sites (à corriger vers speedl.swigs.online)
+4. **Mountain Digital** (exemple e-commerce)
+   - Slug: `mountain-digital`
+   - Domain: `moontain-digital.ch`
+   - Type: `ecommerce`
+
+### Collections E-commerce
+- **products** : Produits avec variations, stock, images
+- **categories** : Catégories hiérarchiques
+- **orders** : Commandes avec statuts et paiements
+- **customers** : Clients avec historique
+- **promocodes** : Codes promo actifs
+
+### Collections Nodes
+- **nodeservers** : Serveurs de validators
+- **nodes** : Validators Ethereum/Gnosis/Lukso
 
 ---
 
