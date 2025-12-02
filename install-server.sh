@@ -51,7 +51,8 @@ fi
 
 # Demander l'ID du serveur
 echo ""
-read -p "$(echo -e ${YELLOW}❓ Entrez l\'ID du serveur ${NC}(ex: server-2): ")" SERVER_ID
+echo -e "${YELLOW}❓ Entrez l'ID du serveur (ex: server-2): ${NC}"
+read SERVER_ID
 if [ -z "$SERVER_ID" ]; then
     error "L'ID du serveur est requis"
 fi
