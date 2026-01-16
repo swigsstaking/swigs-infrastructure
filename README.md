@@ -26,13 +26,19 @@ Scripts de déploiement, configurations et **documentation complète** pour l'in
 Remplacez `server-X` par l'ID de votre serveur (ex: server-2, server-3) :
 
 ```bash
-SERVER_ID=server-X curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh | sudo -E bash
+curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh -o install.sh && sudo bash install.sh server-X
 ```
 
 **Exemple :**
 ```bash
-SERVER_ID=server-2 curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh | sudo -E bash
+curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh -o install.sh && sudo bash install.sh server-2
 ```
+
+Le script va :
+- ✅ Télécharger et installer Node.js, PM2, Nginx
+- ✅ Cloner le repository de monitoring
+- ✅ Configurer le collecteur avec l'ID fourni
+- ✅ Démarrer le service automatiquement
 
 ### Configurer les Permissions de Déploiement
 
