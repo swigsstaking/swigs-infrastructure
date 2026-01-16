@@ -49,12 +49,19 @@ if [ "$EUID" -ne 0 ]; then
     error "Ce script doit être exécuté en tant que root (sudo)"
 fi
 
-# Demander l'ID du serveur
-echo ""
-echo -e "${YELLOW}❓ Entrez l'ID du serveur (ex: server-2): ${NC}"
-read SERVER_ID
+# Demander l'ID du serveur (accepte variable d'environnement ou argument)
 if [ -z "$SERVER_ID" ]; then
-    error "L'ID du serveur est requis"
+    SERVER_ID="$1"
+fi
+
+if [ -z "$SERVER_ID" ]; then
+    echo ""
+    echo -e "${YELLOW}❓ Entrez l'ID du serveur (ex: server-2): ${NC}"
+    read SERVER_ID
+fi
+
+if [ -z "$SERVER_ID" ]; then
+    error "L'ID du serveur est requis. Utilisez: SERVER_ID=server-2 curl ... | sudo bash"
 fi
 
 echo ""

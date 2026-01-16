@@ -23,8 +23,15 @@ Scripts de déploiement, configurations et **documentation complète** pour l'in
 
 ### Installer le Monitoring sur un Nouveau Serveur
 
+Remplacez `server-X` par l'ID de votre serveur (ex: server-2, server-3) :
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh | sudo bash
+SERVER_ID=server-X curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh | sudo -E bash
+```
+
+**Exemple :**
+```bash
+SERVER_ID=server-2 curl -fsSL https://raw.githubusercontent.com/swigsstaking/swigs-infrastructure/main/install-server.sh | sudo -E bash
 ```
 
 ### Configurer les Permissions de Déploiement
