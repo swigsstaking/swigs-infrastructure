@@ -119,9 +119,9 @@ cd $INSTALL_DIR/server-collector
 cat > config.json <<EOF
 {
   "serverId": "$SERVER_ID",
+  "name": "$SERVER_ID",
   "apiUrl": "$API_URL",
   "collectInterval": 60000,
-  "hostname": "$(hostname)",
   "location": "Suisse"
 }
 EOF
@@ -129,9 +129,38 @@ EOF
 # Installer dépendances
 npm install --production
 
+# Détecter l'interpréteur Node.js
+NODE_PATH=$(which node)
+if [ -z "$NODE_PATH" ]; then
+    error "Node.js n'est pas installé"
+fi
+
+# Créer fichier ecosystem PM2
+cat > ecosystem.config.js <<EOF
+module.exports = {
+  apps: [{
+    name: 'swigs-collector-$SERVER_ID',
+    script: './collector.js',
+    interpreter: '$NODE_PATH',
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '200M',
+    env: {
+      NODE_ENV: 'production'
+    },
+    error_file: '~/.pm2/logs/collector-error.log',
+    out_file: '~/.pm2/logs/collector-out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss',
+    merge_logs: true,
+    kill_timeout: 5000
+  }]
+};
+EOF
+
 # Démarrer avec PM2
 pm2 delete swigs-collector-$SERVER_ID 2>/dev/null || true
-pm2 start collector.js --name "swigs-collector-$SERVER_ID"
+pm2 start ecosystem.config.js
 pm2 save
 
 success "Collecteur de métriques installé et démarré"
