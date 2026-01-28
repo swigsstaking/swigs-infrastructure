@@ -48,8 +48,7 @@
 /home/swigs/
 ├── swigs-apps/                          # Applications principales
 │   ├── swigs-cms-backend/               # ⭐ Backend API (Port 3000)
-│   ├── swigs-cms-admin/                 # Admin V1
-│   ├── swigs-cms-admin-v2/              # Admin V2
+│   ├── swigs-cms-admin/                 # Admin (UNIQUE)
 │   ├── swigs-monitoring-api/            # Monitoring API (Port 3001)
 │   ├── swigs-monitoring-agent/          # Agent de monitoring
 │   ├── swigs-control-center/            # Control Center
@@ -73,8 +72,7 @@
 
 ```
 /var/www/
-├── admin/                               # Admin V1 + V2
-│   └── v2/                              # Admin V2
+├── admin/                               # Admin (UNIQUE)
 ├── monitoring/                          # Control Center
 ├── speed-l/                             # Site Speed-L
 ├── buffet-de-la-gare/                   # Site Buffet de la Gare
@@ -138,13 +136,36 @@
 
 ## 🔧 Commandes de Déploiement par Site
 
-### ⚠️ RÈGLE IMPORTANTE
+### 🚨 WORKFLOW OBLIGATOIRE : LOCAL → PUSH → DÉPLOIEMENT
 
-**Toujours exécuter ces commandes dans l'ordre :**
-1. `git pull origin main`
-2. `npm install` (si package.json modifié)
-3. `npm run build`
-4. `sudo cp -r dist/* /var/www/[site]/`
+**TOUJOURS suivre ce workflow :**
+
+1. **Développer en LOCAL** :
+   ```bash
+   cd /Users/corentinflaction/CascadeProjects/sites/[site]
+   git pull origin main
+   npm run dev
+   # Tester les modifications en local
+   ```
+
+2. **Commit et Push** (après validation utilisateur) :
+   ```bash
+   git add -A
+   git commit -m "type: description"
+   git push origin main
+   ```
+
+3. **Déployer sur le serveur** (après confirmation utilisateur) :
+   ```bash
+   ssh swigs@192.168.110.73
+   cd ~/swigs-apps/[site]
+   git pull origin main
+   npm install
+   npm run build
+   sudo cp -r dist/* /var/www/[site]/
+   ```
+
+⚠️ **NE JAMAIS déployer sans confirmation de l'utilisateur !**
 
 ---
 

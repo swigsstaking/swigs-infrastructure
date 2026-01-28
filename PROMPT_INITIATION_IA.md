@@ -12,11 +12,26 @@ Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. 
 - Tester en local avant de déployer
 - Demander confirmation avant de modifier le backend/BDD
 - Vérifier la compatibilité avec les sites existants
+- Faire `git pull origin main` AVANT toute modification
 
 ❌ **JAMAIS** :
 - Modifier les routes API existantes
 - Supprimer des champs de la BDD
 - Déployer sans tester
+- Déployer sans confirmation de l'utilisateur
+
+## 🔄 WORKFLOW OBLIGATOIRE : LOCAL → PUSH → DÉPLOIEMENT
+
+```
+1. Développer en LOCAL (npm run dev)
+2. Tester les modifications
+3. Demander confirmation à l'utilisateur
+4. git add -A && git commit && git push
+5. Demander confirmation pour déployer
+6. Déployer sur le serveur
+```
+
+⚠️ **NE JAMAIS déployer directement sans passer par ce workflow !**
 
 ## 📚 Documentation
 
@@ -36,7 +51,7 @@ Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. 
 
 ## 🏗️ Structure Technique d'un Site
 
-**Utilise cette structure** (référence : `speedl-website`) :
+**Utilise le template officiel** : `swigs-site-template`
 
 ```
 site-website/
@@ -68,7 +83,7 @@ site-website/
 
 | Service | URL |
 |---------|-----|
-| **Admin V2** | https://admin.swigs.online/v2/ |
+| **Admin** | https://admin.swigs.online |
 | **API Backend** | https://swigs.online/api |
 
 **Routes API principales** :
@@ -88,26 +103,21 @@ POST /api/public/orders
 
 ## 🆕 Créer un Nouveau Site
 
-### 1. Créer le Projet
+### 1. Cloner le Template
 
 ```bash
 cd /Users/corentinflaction/CascadeProjects/sites
-mkdir nouveau-site-website && cd nouveau-site-website
+cp -r ../swigs-repos/swigs-site-template nouveau-site-website
+cd nouveau-site-website
+rm -rf .git
+git init
 
-# Copier la structure de Speed-L
-cp -r ../speedl-website/src ./
-cp -r ../speedl-website/public ./
-cp ../speedl-website/package.json ./
-cp ../speedl-website/vite.config.js ./
-cp ../speedl-website/tailwind.config.js ./
-cp ../speedl-website/.env.example ./
-
-# Modifier package.json
-# Changer le "name" en "nouveau-site-website"
-
+# Modifier package.json : changer le "name"
 # Installer
 npm install
 ```
+
+⚠️ **IMPORTANT** : Utiliser `swigs-site-template` (pas speedl-website)
 
 ### 2. Personnaliser
 
@@ -135,7 +145,7 @@ npm run dev
 
 ### 4. Configuration Admin
 
-1. **Aller sur** : https://admin.swigs.online/v2/
+1. **Aller sur** : https://admin.swigs.online
 2. **Se connecter** avec les identifiants fournis
 3. **Créer le site** :
    - Nom : "Nouveau Site"
