@@ -130,8 +130,9 @@
 | **SelfNodes** | selfnodes.com | `~/swigs-apps/selfnodes-website` | `/var/www/selfnodes` | `selfnodes` |
 | **ADLR** | adlr.swigs.online | `~/swigs-apps/sites/adlr-website` | `/var/www/adlr` | `adlr` |
 | **Admin** | admin.swigs.online | `~/swigs-apps/swigs-cms-admin` | `/var/www/admin` | - |
-| **Admin V2** | admin.swigs.online/v2/ | `~/swigs-apps/swigs-cms-admin-v2` | `/var/www/admin/v2` | - |
 | **Control Center** | monitoring.swigs.online | `~/swigs-apps/swigs-control-center` | `/var/www/monitoring` | - |
+
+> ⚠️ **Note** : Le dossier `~/swigs-apps/swigs-cms-admin-v2` sur le serveur est **obsolète** et n'est pas utilisé. Il n'y a qu'un seul admin.
 
 ---
 
@@ -165,7 +166,10 @@ curl http://localhost:3000/api/health
 
 ---
 
-### 🟠 Admin V1
+### 🟠 Admin (admin.swigs.online)
+
+⚠️ **IMPORTANT** : Il n'y a qu'**UN SEUL admin** en production !
+Le dossier `swigs-cms-admin-v2` sur le serveur est obsolète et n'est pas utilisé.
 
 ```bash
 ssh swigs@192.168.110.73
@@ -175,19 +179,6 @@ npm install
 npm run build
 sudo rm -rf /var/www/admin/*
 sudo cp -r dist/* /var/www/admin/
-```
-
----
-
-### 🟠 Admin V2
-
-```bash
-ssh swigs@192.168.110.73
-cd ~/swigs-apps/swigs-cms-admin-v2
-git pull origin main
-npm install
-npm run build
-sudo cp -r dist/* /var/www/admin/v2/
 ```
 
 ---
