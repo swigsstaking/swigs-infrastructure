@@ -20,12 +20,19 @@ Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. 
 
 ## 📚 Documentation
 
-**Lis d'abord** :
-```
-swigs-infrastructure/docs/INFRASTRUCTURE_COMPLETE_2025.md
-```
+**Lis d'abord ces fichiers dans l'ordre** :
 
-Ce document contient TOUT : architecture, routes API, déploiement, MongoDB.
+1. **Architecture générale** :
+   ```
+   swigs-infrastructure/docs/INFRASTRUCTURE_COMPLETE_2025.md
+   ```
+   Contient : architecture, routes API, MongoDB, structure des sites.
+
+2. **Déploiement serveur** :
+   ```
+   swigs-infrastructure/docs/SERVER_DEPLOYMENT_GUIDE.md
+   ```
+   Contient : chemins serveur, commandes de déploiement par site, CORS, Nginx.
 
 ## 🏗️ Structure Technique d'un Site
 
@@ -154,40 +161,43 @@ git push -u origin main
 
 **⚠️ NE PAS déployer sans confirmation de l'utilisateur**
 
-Propose ce workflow :
+Voir `SERVER_DEPLOYMENT_GUIDE.md` pour les commandes détaillées par site.
+
+**Chemins importants sur le serveur** :
+
+| Site | Dossier Source | Dossier Build |
+|------|----------------|---------------|
+| **Backend** | `~/swigs-apps/swigs-cms-backend` | - (PM2) |
+| **Admin** | `~/swigs-apps/swigs-cms-admin` | `/var/www/admin` |
+| **Speed-L** | `~/websites/speed-l` ⚠️ | `/var/www/speed-l` |
+| **Buffet** | `~/swigs-apps/buffet-de-la-gare-website` | `/var/www/buffet-de-la-gare` |
+| **Gîte de Lodze** | `~/swigs-apps/sites/gitedelodze` | `/var/www/gite-lodze` |
+| **Moontain Studio** | `~/swigs-apps/agence-web-premium` | `/var/www/agence-web-premium` |
+| **GTS Alpina** | `~/swigs-apps/gtsalpina-website` | `/var/www/gtsalpina` |
+| **SelfNodes** | `~/swigs-apps/selfnodes-website` | `/var/www/selfnodes` |
+| **SWIGS** | `~/swigs-apps/swigs-website` | `/var/www/swigswebsite` |
+
+**Workflow de déploiement** :
 
 ```bash
 # 1. SSH sur le serveur
 ssh swigs@192.168.110.73
 
-# 2. Cloner le repo
-cd ~/swigs-apps
-git clone git@github.com:swigsstaking/nouveau-site-website.git
-cd nouveau-site-website
+# 2. Aller dans le dossier source
+cd ~/swigs-apps/[site-website]
 
-# 3. Installer et builder
+# 3. Pull, install, build
+git pull origin main
 npm install
 npm run build
 
-# 4. Créer la config Nginx
-sudo nano /etc/nginx/sites-available/nouveau-site.swigs.online
-# (Copier la config de speedl.swigs.online et adapter)
+# 4. Copier le build
+sudo cp -r dist/* /var/www/[site]/
 
-# 5. Activer le site
-sudo ln -s /etc/nginx/sites-available/nouveau-site.swigs.online /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo nginx -s reload
-
-# 6. Déployer
-sudo mkdir -p /var/www/nouveau-site
-sudo cp -r dist/* /var/www/nouveau-site/
-sudo chown -R swigs:www-data /var/www/nouveau-site
-
-# 7. SSL
-sudo certbot --nginx -d nouveau-site.swigs.online
-
-# 8. Tester
-curl -I https://nouveau-site.swigs.online
+# 5. Pour un NOUVEAU site, ajouter :
+# - Config Nginx
+# - Certificat SSL (certbot)
+# - Domaine au CORS backend
 ```
 
 ## 🎨 Conventions
@@ -228,4 +238,4 @@ const response = await fetch(
 
 ---
 
-**📝 Version : 1.0 - Novembre 2025**
+**📝 Version : 2.0 - Janvier 2026**
