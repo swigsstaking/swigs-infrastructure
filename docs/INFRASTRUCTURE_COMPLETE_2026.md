@@ -1,6 +1,8 @@
-# 🏗️ SWIGS Infrastructure Complète - 2025
+# 🏗️ SWIGS Infrastructure Complète - 2026
 
 **Documentation officielle et à jour de l'infrastructure SWIGS**
+
+> ✅ Mise à jour Janvier 2026 - Sécurité et Monitoring renforcés
 
 ---
 
@@ -23,7 +25,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    SWIGS Ecosystem 2025                     │
+│                    SWIGS Ecosystem 2026                     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
@@ -57,8 +59,7 @@
 
 | Service | URL | Chemin Serveur |
 |---------|-----|----------------|
-| **Admin V1** | https://admin.swigs.online | `/var/www/admin` |
-| **Admin V2** | https://admin.swigs.online/v2/ | `/var/www/admin/v2` |
+| **Admin** | https://admin.swigs.online | `/var/www/admin` |
 | **Control Center** | https://monitoring.swigs.online | `/var/www/monitoring` |
 | **API Backend** | https://swigs.online/api | Port 3000 (PM2) |
 | **API Monitoring** | https://swigs.online/monitoring-api | Port 3001 (PM2) |
@@ -204,18 +205,19 @@ POST   /api/webhooks/paypal
 
 ## 🎨 Admin CMS
 
-### Admin V1 vs V2
+### Admin CMS (Unique)
 
-| Feature | V1 | V2 |
-|---------|----|----|
-| **URL** | https://admin.swigs.online | https://admin.swigs.online/v2/ |
-| **UI/UX** | Ancienne | Moderne, responsive |
-| **Dark Mode** | Oui | Oui (amélioré) |
-| **E-commerce** | Basique | Complet |
-| **Mobile** | Non | Oui |
-| **Status** | Maintenance | Production |
+> ⚠️ **Note** : Il n'y a qu'UN SEUL admin en production. Le dossier `swigs-cms-admin-v2` est obsolète.
 
-### Fonctionnalités Admin V2
+| Feature | Status |
+| **URL** | https://admin.swigs.online |
+| **Source** | `~/swigs-apps/swigs-cms-admin` |
+| **Build** | `/var/www/admin/` |
+| **UI/UX** | Moderne, responsive, Dark Mode |
+| **E-commerce** | Complet |
+| **Mobile** | Oui |
+
+### Fonctionnalités Admin
 
 #### Dashboard
 - Vue d'ensemble multi-sites
@@ -317,11 +319,21 @@ site-website/
 
 ### Template de Référence
 
-**Utiliser `speedl-website` comme base** pour créer un nouveau site :
+**Utiliser `swigs-site-template`** pour créer un nouveau site :
+
+```bash
+cd /Users/corentinflaction/CascadeProjects/sites
+cp -r ../swigs-repos/swigs-site-template nouveau-site-website
+cd nouveau-site-website
+rm -rf .git && git init
+npm install
+```
+
 - Structure éprouvée
-- Composants réutilisables
-- Hooks SEO/SiteInfo
+- Composants réutilisables (SEOHead, Layout)
+- Hooks SEO/SiteInfo/Contact
 - Configuration Tailwind
+- Connexion automatique à l'Admin via slug
 
 ---
 
@@ -433,8 +445,7 @@ GET  /api/financial/monthly          // Données financières
 /home/swigs/
 ├── swigs-apps/                      # Applications Node.js
 │   ├── swigs-cms-backend/           # Backend API (Port 3000)
-│   ├── swigs-cms-admin/             # Admin V1
-│   ├── swigs-cms-admin-v2/          # Admin V2
+│   ├── swigs-cms-admin/             # Admin (UNIQUE)
 │   ├── swigs-monitoring-api/        # Monitoring API (Port 3001)
 │   ├── swigs-control-center/        # Control Center
 │   ├── speedl-website/              # Site Speed-L
@@ -497,14 +508,15 @@ pm2 restart swigs-cms-backend
 pm2 logs swigs-cms-backend --lines 20
 ```
 
-#### Admin V2
+#### Admin CMS
 ```bash
 ssh swigs@192.168.110.73
-cd ~/swigs-apps/swigs-cms-admin-v2
+cd ~/swigs-apps/swigs-cms-admin
 git pull origin main
 npm install
 npm run build
-sudo cp -r dist/* /var/www/admin/v2/
+sudo rm -rf /var/www/admin/*
+sudo cp -r dist/* /var/www/admin/
 ```
 
 #### Site Web
@@ -743,12 +755,71 @@ router.get('/api/sites', newHandler);  // ❌ Comportement changé !
 
 ### Documentation
 
-- [Architecture Complète](./ARCHITECTURE.md)
-- [Guide Création Site](./QUICK_START_NEW_SITE.md)
+- [Guide Déploiement Serveur](./SERVER_DEPLOYMENT_GUIDE.md)
 - [Schéma MongoDB](./MONGODB_SCHEMA.md)
-- [Architecture Serveur](./SERVER_ARCHITECTURE.md)
+- [Guide Blockchain](./GUIDE-BLOCKCHAIN-SERVER.md)
+- [Charte Graphique](./SWIGS-BRAND-GUIDELINES.md)
 
 ---
 
-**📝 Dernière mise à jour : Novembre 2025**
+## 🛡️ Sécurité & Performance (Janvier 2026)
+
+### Rate Limiting
+
+| Route | Limite | Description |
+|-------|--------|-------------|
+| `/api/auth/login` | 10 req/15min | Anti-bruteforce |
+| `/api/contact/submit` | 5 req/15min | Anti-spam |
+| `/api/*` (global) | 500 req/15min | Protection générale |
+
+### Cache HTTP
+
+Toutes les routes `/api/public/*` ont un cache de 5 minutes :
+```
+Cache-Control: public, max-age=300
+```
+
+### Health Check Avancé
+
+```bash
+curl https://swigs.online/api/health
+```
+
+Réponse :
+```json
+{
+  "status": "OK",
+  "services": {
+    "mongodb": "connected",
+    "redis": "connected"
+  },
+  "system": {
+    "memory": "60MB",
+    "uptime": "5h 30m",
+    "nodeVersion": "v20.x"
+  }
+}
+```
+
+### Alertes Telegram
+
+Les erreurs 500 en production envoient automatiquement une alerte Telegram à l'admin.
+
+### Backup MongoDB
+
+- **Local** : `/home/swigs/backups/mongodb/` (7 jours de rétention)
+- **Offsite** : Google Drive via rclone (optionnel)
+- **Cron** : Tous les jours à 3h du matin
+
+```bash
+# Vérifier les backups
+ls -la /home/swigs/backups/mongodb/
+
+# Vérifier Google Drive (si configuré)
+rclone ls gdrive:SWIGS-Backups/mongodb/
+```
+
+---
+
+**📝 Dernière mise à jour : Janvier 2026**
 **🔒 Production - NO BREAKING CHANGES**
