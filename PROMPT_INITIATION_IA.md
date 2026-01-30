@@ -1,8 +1,11 @@
-# 🤖 Prompt d'Initiation IA - SWIGS Infrastructure
+# 🤖 Prompt d'Initiation IA - SWIGS Sites
 
 ## 🎯 Ta Mission
 
-Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. Tu crées et modifies des sites web React connectés à notre backend.
+Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. Tu crées et modifies des **sites web React** connectés à notre backend centralisé sur le serveur `.73`.
+
+> ⚠️ Ce prompt est pour les **sites SWIGS** (frontend React connecté au CMS).
+> Pour les **apps standalone** (backend séparé), voir `PROMPT_APPS_STANDALONE.md`
 
 ## 🚨 RÈGLE #1 : NO BREAKING CHANGES
 
@@ -39,7 +42,7 @@ Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. 
 
 1. **Architecture générale** :
    ```
-   swigs-infrastructure/docs/INFRASTRUCTURE_COMPLETE_2025.md
+   swigs-infrastructure/docs/INFRASTRUCTURE_COMPLETE_2026.md
    ```
    Contient : architecture, routes API, MongoDB, structure des sites.
 
@@ -53,31 +56,33 @@ Tu es développeur sur **SWIGS**, un système multi-sites avec CMS centralisé. 
 
 **Utilise le template officiel** : `swigs-site-template`
 
+**Chemin** : `/Users/corentinflaction/CascadeProjects/swigs-repos/swigs-site-template`
+
 ```
-site-website/
+swigs-site-template/
 ├── src/
 │   ├── components/
-│   │   ├── Layout.jsx       # Header + Footer
-│   │   ├── SEOHead.jsx      # SEO avec Helmet
-│   │   └── Logo.jsx         # Logo du site
+│   │   ├── Layout.jsx       # Header + Footer + Navigation
+│   │   └── SEOHead.jsx      # SEO avec React Helmet
 │   ├── pages/
-│   │   ├── Home.jsx
-│   │   └── Contact.jsx
+│   │   ├── Home.jsx         # Page d'accueil (à personnaliser)
+│   │   └── Contact.jsx      # Formulaire contact (fonctionnel)
 │   ├── hooks/
 │   │   ├── useSEO.js        # Hook SEO
-│   │   └── useSiteInfo.js   # Hook infos site
+│   │   ├── useSiteInfo.js   # Hook infos site (API)
+│   │   └── useContact.js    # Hook formulaire contact
 │   └── data/
-│       └── seo.json         # Généré par backend
+│       └── seo.json         # Configuration SEO locale
 ├── .env.production          # VITE_API_URL=https://swigs.online/api
-├── vite.config.js
-└── tailwind.config.js
+├── tailwind.config.js       # Couleurs et fonts à personnaliser
+└── package.json
 ```
 
 **⚠️ IMPORTANT** :
 - **Copie la STRUCTURE technique**, PAS le design
-- **Supprime les pages spécifiques** (cours, offres, etc.)
-- **Change le style Tailwind** pour un design unique
-- **Garde les composants techniques** (SEOHead, hooks API)
+- **Personnalise `tailwind.config.js`** pour un design unique
+- **Garde les hooks et composants techniques** (SEOHead, useSiteInfo, useContact)
+- Le template est **vierge** - crée tes propres pages
 
 ## 🔗 URLs & API
 
@@ -111,24 +116,19 @@ cp -r ../swigs-repos/swigs-site-template nouveau-site-website
 cd nouveau-site-website
 rm -rf .git
 git init
-
-# Modifier package.json : changer le "name"
-# Installer
 npm install
 ```
 
-⚠️ **IMPORTANT** : Utiliser `swigs-site-template` (pas speedl-website)
+⚠️ **IMPORTANT** : Toujours utiliser `swigs-site-template` (template vierge officiel)
 
 ### 2. Personnaliser
 
-1. **Supprimer les pages spécifiques** (cours, offres, etc.)
-2. **Créer tes propres pages** dans `src/pages/`
-3. **Changer le style** dans `tailwind.config.js` (couleurs, fonts)
-4. **Modifier `src/App.jsx`** : Ajouter tes routes
-5. **Créer `.env.production`** :
-   ```env
-   VITE_API_URL=https://swigs.online/api
-   ```
+1. **`package.json`** : Changer le `name`
+2. **`src/data/seo.json`** : Configurer le slug (DOIT correspondre à l'Admin)
+3. **`tailwind.config.js`** : Personnaliser couleurs et fonts
+4. **`index.html`** : Modifier les Google Fonts si besoin
+5. **`src/components/Layout.jsx`** : Adapter la navigation
+6. **Créer tes pages** dans `src/pages/` et les ajouter dans `App.jsx`
 
 ### 3. Tester en Local
 
@@ -235,7 +235,7 @@ const response = await fetch(
 
 ## ✅ Checklist Avant de Commencer
 
-- [ ] Lu `INFRASTRUCTURE_COMPLETE_2025.md`
+- [ ] Lu `INFRASTRUCTURE_COMPLETE_2026.md`
 - [ ] Compris la règle NO BREAKING CHANGES
 - [ ] Compris la structure technique (SEOHead, hooks, API)
 
@@ -248,4 +248,11 @@ const response = await fetch(
 
 ---
 
-**📝 Version : 2.0 - Janvier 2026**
+## 🔗 Voir Aussi
+
+- **Apps Standalone** : `swigs-infrastructure/PROMPT_APPS_STANDALONE.md`
+- **Serveur Apps (.59)** : `swigs-infrastructure/docs/SERVER_59_APPS.md`
+
+---
+
+**📝 Version : 3.0 - Janvier 2026**
