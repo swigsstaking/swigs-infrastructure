@@ -2,7 +2,7 @@
 
 **Documentation du serveur secondaire SWIGS**
 
-> Ce serveur héberge les **applications standalone** et les **backups** du serveur principal (.73)
+> Ce serveur héberge les **applications standalone** (avec leur propre backend) et les **backups** du serveur principal (.73)
 
 ---
 
@@ -14,6 +14,7 @@
 | **Utilisateur** | `swigs` |
 | **OS** | Ubuntu 22.04 LTS |
 | **Rôle** | Apps standalone + Backups |
+| **Node.js** | `/usr/bin/node` ou `/snap/bin/node` |
 
 ## 🔗 Connexion
 
@@ -30,23 +31,27 @@ ssh swigs@192.168.110.59
 │                    Serveur .59                               │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
+│  ┌───────────────────────────────────────────────┐       │
+│  │              Apps Déployées                        │       │
+│  ├───────────────────────────────────────────────┤       │
+│  │ • swigs-task     (Node.js)  :3002                 │       │
+│  │ • ai-builder     (Node.js)  :3001                 │       │
+│  │ • armis          (Laravel/PHP)                    │       │
+│  │ • swigs-collector (Service interne)               │       │
+│  └───────────────────────────────────────────────┘       │
+│                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐                  │
-│  │  Apps Standalone │  │    Backups      │                  │
+│  │    Backups      │  │     Nginx       │                  │
 │  ├─────────────────┤  ├─────────────────┤                  │
-│  │ • swigs-task    │  │ • MongoDB .73   │                  │
-│  │ • [future apps] │  │ • Uploads .73   │                  │
-│  │                 │  │ • Configs .73   │                  │
-│  └────────┬────────┘  └─────────────────┘                  │
-│           │                                                 │
-│  ┌────────▼────────┐  ┌─────────────────┐                  │
-│  │    MongoDB      │  │     Nginx       │                  │
-│  │   (local)       │  │   + SSL         │                  │
+│  │ • MongoDB .73   │  │ • SSL/HTTPS     │                  │
+│  │ • Uploads .73   │  │ • Reverse Proxy │                  │
+│  │ • Configs .73   │  │ • PHP-FPM       │                  │
 │  └─────────────────┘  └─────────────────┘                  │
 │                                                             │
-│  ┌─────────────────────────────────────────────────┐       │
-│  │                    PM2                          │       │
-│  │  Gestion des processus Node.js                  │       │
-│  └─────────────────────────────────────────────────┘       │
+│  ┌─────────────────────────────────────────────┐       │
+│  │           PM2 Process Manager                   │       │
+│  │  swigs-task, ai-builder, swigs-collector         │       │
+│  └─────────────────────────────────────────────┘       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -56,9 +61,17 @@ ssh swigs@192.168.110.59
 
 ```
 /home/swigs/
-├── apps/                      # Applications standalone
-│   ├── swigs-task/           # App de gestion de tâches
-│   └── [future-app]/         # Futures applications
+├── swigs-task/                # App de gestion de tâches
+│   ├── backend/              # API Node.js (Express)
+│   ├── frontend/             # React (build dans /var/www/swigs-task)
+│   └── ecosystem.config.cjs  # Config PM2
+│
+├── ai-builder-backend/        # Backend AI Builder
+│   ├── src/                  # Code source
+│   ├── server.js             # Point d'entrée
+│   └── .env                  # Variables d'environnement
+│
+├── ai-builder-dist/           # Frontend AI Builder (build)
 │
 ├── backups/                   # Backups du serveur .73
 │   ├── mongodb/
@@ -66,28 +79,51 @@ ssh swigs@192.168.110.59
 │   │   ├── weekly/           # 4 semaines
 │   │   └── monthly/          # 3 mois
 │   ├── uploads/
-│   │   ├── daily/
-│   │   ├── weekly/
-│   │   └── monthly/
 │   └── configs/
-│       └── daily/
 │
-└── logs/                      # Logs divers
+├── ecosystem.config.js        # Config PM2 globale (collector)
+└── collector.js               # Service swigs-collector
+
+/var/www/
+├── swigs-task/                # Frontend swigs-task (build)
+├── ai-builder/                # Frontend ai-builder (build)
+└── armis/                     # App Laravel/PHP
 ```
 
 ---
 
 ## 🚀 Applications Déployées
 
-### swigs-task (exemple)
+### swigs-task
 
 | Élément | Valeur |
 |---------|--------|
-| **Chemin** | `~/apps/swigs-task` |
-| **Port** | `3100` |
+| **Chemin Backend** | `~/swigs-task/backend/` |
+| **Chemin Frontend** | `/var/www/swigs-task/` |
+| **Port** | `3002` |
 | **PM2 Name** | `swigs-task` |
 | **URL** | `https://task.swigs.online` |
-| **Database** | `mongodb://localhost:27017/swigs-task` |
+| **Nginx** | `/etc/nginx/sites-available/swigs-task` |
+
+### ai-builder
+
+| Élément | Valeur |
+|---------|--------|
+| **Chemin Backend** | `~/ai-builder-backend/` |
+| **Chemin Frontend** | `/var/www/ai-builder/` |
+| **Port** | `3001` |
+| **PM2 Name** | `swigs-collector-server-2` |
+| **URL** | `https://ai-builder.swigs.online` |
+| **Nginx** | `/etc/nginx/sites-available/ai-builder` |
+
+### armis (Laravel/PHP)
+
+| Élément | Valeur |
+|---------|--------|
+| **Chemin** | `/var/www/armis/` |
+| **Type** | Laravel (PHP 8.3-FPM) |
+| **URL** | `https://armis.swigs.online` |
+| **Nginx** | `/etc/nginx/sites-available/armis` |
 
 ---
 
@@ -157,10 +193,11 @@ sudo certbot renew --dry-run
 | 80 | Nginx HTTP | ✅ Actif |
 | 443 | Nginx HTTPS | ✅ Actif |
 | 27017 | MongoDB | ✅ Actif |
-| 3100 | swigs-task | ✅ Réservé |
-| 3101-3199 | Apps futures | 🔓 Disponible |
+| 3001 | ai-builder | ✅ Utilisé |
+| 3002 | swigs-task | ✅ Utilisé |
+| 3003-3099 | Apps futures | 🔓 Disponible |
 
-**Convention** : Utiliser les ports `31XX` pour les apps standalone.
+**Convention** : Utiliser les ports `30XX` pour les apps Node.js.
 
 ---
 
